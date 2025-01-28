@@ -75,8 +75,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget build(BuildContext context) {
-    _emailTextInputController.text = 'svladimirov+adm@eshyft.com';
-    _passwordTextInputController.text = 'password';
+
     return Scaffold(
         resizeToAvoidBottomInset: false,
         backgroundColor: Constants.COLOR_PAPER,
