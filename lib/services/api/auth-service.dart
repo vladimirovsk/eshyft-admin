@@ -10,7 +10,7 @@ import 'request-api.dart';
 
 final StorageService _storageService = StorageService();
 
-Future<Response> authLogin(Map<String, dynamic>? params) async {
+Future<Response?> authLogin(Map<String, dynamic>? params) async {
     return await getRequest('/auth/login', 'POST', params);
 }
 
@@ -18,12 +18,16 @@ Future<Response?> authRefresh(Map<String, dynamic>? params) async {
     return await getRequest('/auth/refresh', 'POST', params);
 }
 
-Future<Response?> authProfile(Map<String, dynamic>? params, String accessToken) async {
-    final String _accessToken = accessToken;
-    final Map<String, dynamic> headers = {
-        "Authorization": "Bearer ${_accessToken}",
-    };
-    return await getRequest('/auth/profile', 'GET', params, headers);
+Future<Response?> authProfile(String accessToken) async {
+    try {
+        final String _accessToken = accessToken;
+        final Map<String, dynamic> headers = {
+            "Authorization": "Bearer ${_accessToken}",
+        };
+        return await getRequest('/auth/profile', 'GET', null, headers);
+    } catch (e) {
+        debugPrint('ERROR authProfile: ${e}');
+    }
 }
 
 Future<void> updateProfile(context, request) async {
@@ -31,8 +35,7 @@ Future<void> updateProfile(context, request) async {
     _storageService.writeSecureData(StorageItem('refreshToken', jsonResponse['refreshToken']));
     _storageService.writeSecureData(StorageItem('accessToken', jsonResponse['accessToken']));
 
-    debugPrint('RESPONSE ${jsonResponse}');
     final accessToken = jsonResponse['accessToken'];
-    final _authProfile = await authProfile({}, accessToken);
+    final _authProfile = await authProfile(accessToken);
     _storageService.writeSecureData(StorageItem('profileUser', _authProfile.toString()));
 }

@@ -3,6 +3,9 @@ import 'dart:convert' as convert;
 import 'package:eshyftadmin/services/storage_service.dart';
 import 'package:flutter/material.dart';
 
+import '../models/storage_item.dart';
+import '../services/api/auth-service.dart';
+
 class NavBarScreen extends StatefulWidget {
   const NavBarScreen({super.key});
   @override
@@ -21,8 +24,15 @@ class _NavBarScreenState extends State<NavBarScreen> {
   }
 
   Future getProfile() async {
-  final result = await _storageService.readSecureData('profileUser');
-  final jsonProfile = convert.jsonDecode(result.toString());
+    final accessToken = await _storageService.readSecureData('accessToken');
+
+    if (accessToken != null) {
+       final _authProfile = await authProfile(accessToken);
+       _storageService.writeSecureData(StorageItem('profileUser', _authProfile.toString()));
+    }
+
+    final result = await _storageService.readSecureData('profileUser');
+    final jsonProfile = convert.jsonDecode(result.toString());
 
   setState(() {
     avatar = jsonProfile['avatar'];

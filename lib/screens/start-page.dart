@@ -36,6 +36,7 @@ class _StartPageScreenState extends State<StartPageScreen> {
     try {
       final result = await _storageService.readSecureData('refreshToken');
       final String token = result as String;
+      debugPrint('Refresh TOKEN ${token}');
       checkRefreshToken(token);
       return result;
     } catch (Storage){

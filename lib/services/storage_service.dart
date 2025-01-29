@@ -61,7 +61,7 @@ class StorageService {
       allData.entries.map((e) =>
         StorageItem(e.key, e.value)
       ).toList();
-      debugPrint("Reading all secured data");
+      debugPrint("Reading all secured data ${list.toString()}");
       return list;
     } catch (e) {
       debugPrint('Empty SecureData');
@@ -74,6 +74,17 @@ class StorageService {
     await _secureStorage.deleteAll(
       aOptions: _getAndroidOptions(),
       iOptions: _getIOSOptions());
+  }
+
+  Future<void> printAllSecureData() async {
+    try {
+      final Map<String, String> allData = await _secureStorage.readAll();
+      allData.forEach((key, value) {
+        print('Key: $key, Value: $value');
+      });
+    } catch (e) {
+      print('Error reading secure storage: $e');
+    }
   }
 
   Future<bool> containsKeyInSecureData(String key) async {

@@ -52,16 +52,22 @@ class _LoginScreenState extends State<LoginScreen> {
         'app': ['web'],
       });
 
-      if (request.statusCode == 200) {
+      if (request?.statusCode == 200) {
         _storageService.writeSecureData(StorageItem('email', _emailTextInputController.text.trim()));
         _storageService.writeSecureData(StorageItem('password', _passwordTextInputController.text.trim()));
-        final result = await _storageService.readSecureData('profileUser');
-        final jsonProfileUser = convert.jsonDecode(result.toString());
-        if (jsonProfileUser['position']!='admin') {
-          SnackBarService.showSnackBar(context, 'No user access levels', true);
-          Navigator.of(context).pushNamed('/');
-          throw new Exception('No user access levels');
-        };
+        await updateProfile(context, request);
+
+        final storedData = await _storageService.readSecureData('profileUser');
+        final jsonProfileUser = convert.jsonDecode(storedData.toString());
+
+       if (jsonProfileUser == null ) {
+
+         debugPrint('jsonProfileUser ${jsonProfileUser.toString()}');
+
+         SnackBarService.showSnackBar(context, 'No user access levels', true);
+         Navigator.of(context).pushNamed('/');
+         throw new Exception('No user access levels');
+       };
 
         Navigator.of(context).pushNamed('/timecards');
       }
@@ -75,7 +81,6 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget build(BuildContext context) {
-
     return Scaffold(
         resizeToAvoidBottomInset: false,
         backgroundColor: Constants.COLOR_PAPER,

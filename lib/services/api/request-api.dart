@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 
 final optionsDio = BaseOptions(
   baseUrl: 'https://dev-api.eshyft.com/api/v2',
@@ -8,16 +9,18 @@ final optionsDio = BaseOptions(
 );
 final dio = Dio(optionsDio);
 
-Future<Response> getRequest(String endpoint, String type, [Map<String, dynamic>? params, Map<String, dynamic>? headers] ) async {
+Future<Response?> getRequest(String endpoint, String type, [Map<String, dynamic>? params, Map<String, dynamic>? headers] ) async {
   if (headers != null){
     print(headers);
   }
 
-    final response = await dio.request(
-      endpoint,
-      data: params,
-      options: Options(method: type, headers: headers),
-    );
-    return response;
+  final response = await dio.request(
+    endpoint,
+    queryParameters: type.toUpperCase() == 'GET' ? params : null,
+    data: type.toUpperCase() != 'GET' ? params : null,
+    options: Options(method: type, headers: headers),
+  );
+
+  return response;
 }
 
